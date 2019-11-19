@@ -1,29 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useState} from 'react';
 import './App.css';
-import {User} from "./User"
+import {fetchUser, User, UserCtx} from "./User";
+import {useAsync} from "./ss-react-utils";
 
-function App() {
+// const PageSelector = ({page}: { page: string }) => {
+const AppLoaded = ({user}: {user: User}) => {
+  return <div className="App">
+    {user.userName}
+  </div>;
+};
+
+const AppLoading = () => {
+  return <div>Loading ...</div>;
+};
+
+const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
 
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  useAsync({
+    op: fetchUser,
+    onSuccess: setUser,
+    deps: []
+  });
+
+  if (user !== null) {
+    return <AppLoaded user={user} />;
+  } else {
+    return <AppLoading/>;
+  }
 }
 
 export default App;
